@@ -1,0 +1,1 @@
+/usr/bin/clang++  -O2 -g -DNDEBUG   CMakeFiles/day01.dir/src/day01.cpp.o  -o day01 -lmysqlcppconn -pthread 
