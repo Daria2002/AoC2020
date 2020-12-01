@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/daria/Documents/AoC2020/src/day01.cpp" "/home/daria/Documents/AoC2020/build/CMakeFiles/day01.dir/src/day01.cpp.o"
+  "/home/daria/Documents/AoC2020/src/day01_1.cpp" "/home/daria/Documents/AoC2020/build/CMakeFiles/day01_1.dir/src/day01_1.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 

@@ -6,7 +6,17 @@
 
 #IncludeRegexTransform: 
 
-/home/daria/Documents/AoC2020/src/day01.cpp
+/home/daria/Documents/AoC2020/src/day01_1.cpp
 iostream
+-
+fstream
+-
+vector
+-
+algorithm
+-
+unordered_set
+-
+string
 -
 

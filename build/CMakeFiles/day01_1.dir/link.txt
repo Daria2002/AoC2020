@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2 -g -DNDEBUG   CMakeFiles/day01_1.dir/src/day01_1.cpp.o  -o day01_1 

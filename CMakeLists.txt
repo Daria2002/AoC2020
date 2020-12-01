@@ -18,6 +18,5 @@ foreach( testsourcefile ${aoc2020_SOURCES} )
 
     add_executable( ${testname} ${testsourcefile} )
     target_compile_features(${testname} PRIVATE cxx_std_17)
-    target_link_libraries(${testname} Threads::Threads mysqlcppconn)
 
 endforeach( testsourcefile ${aoc2020_SOURCES} )

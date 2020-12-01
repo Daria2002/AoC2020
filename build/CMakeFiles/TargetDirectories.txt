@@ -1,3 +1,3 @@
 /home/daria/Documents/AoC2020/build/CMakeFiles/rebuild_cache.dir
-/home/daria/Documents/AoC2020/build/CMakeFiles/day01.dir
+/home/daria/Documents/AoC2020/build/CMakeFiles/day01_1.dir
 /home/daria/Documents/AoC2020/build/CMakeFiles/edit_cache.dir

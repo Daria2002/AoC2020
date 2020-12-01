@@ -51,8 +51,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.10/Modules/Compiler/Borland-DetermineCompiler.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/Bruce-C-DetermineCompiler.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
-  "/usr/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake"
-  "/usr/share/cmake-3.10/Modules/Compiler/Clang-C.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/Clang-CXX.cmake"
@@ -68,7 +66,10 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.10/Modules/Compiler/Fujitsu-DetermineCompiler.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/GHS-DetermineCompiler.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/GNU-C-DetermineCompiler.cmake"
+  "/usr/share/cmake-3.10/Modules/Compiler/GNU-C-FeatureTests.cmake"
+  "/usr/share/cmake-3.10/Modules/Compiler/GNU-C.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake"
+  "/usr/share/cmake-3.10/Modules/Compiler/GNU-FindBinUtils.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/GNU.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/HP-C-DetermineCompiler.cmake"
   "/usr/share/cmake-3.10/Modules/Compiler/HP-CXX-DetermineCompiler.cmake"
@@ -99,7 +100,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.10/Modules/FindPackageMessage.cmake"
   "/usr/share/cmake-3.10/Modules/FindThreads.cmake"
   "/usr/share/cmake-3.10/Modules/Internal/FeatureTesting.cmake"
-  "/usr/share/cmake-3.10/Modules/Platform/Linux-Clang-C.cmake"
   "/usr/share/cmake-3.10/Modules/Platform/Linux-Clang-CXX.cmake"
   "/usr/share/cmake-3.10/Modules/Platform/Linux-Determine-CXX.cmake"
   "/usr/share/cmake-3.10/Modules/Platform/Linux-GNU-C.cmake"
@@ -127,5 +127,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/day01.dir/DependInfo.cmake"
+  "CMakeFiles/day01_1.dir/DependInfo.cmake"
   )

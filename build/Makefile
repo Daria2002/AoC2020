@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named day01
+# Target rules for targets named day01_1
 
 # Build rule for target.
-day01: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 day01
-.PHONY : day01
+day01_1: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 day01_1
+.PHONY : day01_1
 
 # fast build rule for target.
-day01/fast:
-	$(MAKE) -f CMakeFiles/day01.dir/build.make CMakeFiles/day01.dir/build
-.PHONY : day01/fast
+day01_1/fast:
+	$(MAKE) -f CMakeFiles/day01_1.dir/build.make CMakeFiles/day01_1.dir/build
+.PHONY : day01_1/fast
 
-src/day01.o: src/day01.cpp.o
+src/day01_1.o: src/day01_1.cpp.o
 
-.PHONY : src/day01.o
+.PHONY : src/day01_1.o
 
 # target to build an object file
-src/day01.cpp.o:
-	$(MAKE) -f CMakeFiles/day01.dir/build.make CMakeFiles/day01.dir/src/day01.cpp.o
-.PHONY : src/day01.cpp.o
+src/day01_1.cpp.o:
+	$(MAKE) -f CMakeFiles/day01_1.dir/build.make CMakeFiles/day01_1.dir/src/day01_1.cpp.o
+.PHONY : src/day01_1.cpp.o
 
-src/day01.i: src/day01.cpp.i
+src/day01_1.i: src/day01_1.cpp.i
 
-.PHONY : src/day01.i
+.PHONY : src/day01_1.i
 
 # target to preprocess a source file
-src/day01.cpp.i:
-	$(MAKE) -f CMakeFiles/day01.dir/build.make CMakeFiles/day01.dir/src/day01.cpp.i
-.PHONY : src/day01.cpp.i
+src/day01_1.cpp.i:
+	$(MAKE) -f CMakeFiles/day01_1.dir/build.make CMakeFiles/day01_1.dir/src/day01_1.cpp.i
+.PHONY : src/day01_1.cpp.i
 
-src/day01.s: src/day01.cpp.s
+src/day01_1.s: src/day01_1.cpp.s
 
-.PHONY : src/day01.s
+.PHONY : src/day01_1.s
 
 # target to generate assembly for a file
-src/day01.cpp.s:
-	$(MAKE) -f CMakeFiles/day01.dir/build.make CMakeFiles/day01.dir/src/day01.cpp.s
-.PHONY : src/day01.cpp.s
+src/day01_1.cpp.s:
+	$(MAKE) -f CMakeFiles/day01_1.dir/build.make CMakeFiles/day01_1.dir/src/day01_1.cpp.s
+.PHONY : src/day01_1.cpp.s
 
 # Help Target
 help:
@@ -157,11 +157,11 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... day01"
+	@echo "... day01_1"
 	@echo "... edit_cache"
-	@echo "... src/day01.o"
-	@echo "... src/day01.i"
-	@echo "... src/day01.s"
+	@echo "... src/day01_1.o"
+	@echo "... src/day01_1.i"
+	@echo "... src/day01_1.s"
 .PHONY : help
 
 
