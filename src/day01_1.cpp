@@ -40,7 +40,7 @@ Triple find(std::unordered_map<long long, Triple, triple_hash> triples, long lon
 }
 
 /**
- * Time complexity: O(n ^ 2)
+ * Time complexity: O(n)
  */
 Triple get_3_nums(const std::string file_name) 
 {
