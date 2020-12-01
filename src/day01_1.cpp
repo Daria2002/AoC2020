@@ -2,52 +2,27 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include <unordered_set>
+#include <unordered_map>
 #include <string>
 
-class Triple 
+std::tuple<long long, long long, long long> find(std::unordered_map<long long, std::tuple<long long, long long, long long>> triples, long long num)
 {
-    public:
-        Triple() = default;
-        Triple(long long f, long long s, long long t) : first(f), second(s), third(t) {}
-        Triple(long long f, long long s) : first(f), second(s), third(-1) {}
-        long long sum_of_1st_and_2nd()
-        {
-            return first + second;
-        }
-        long long first, second, third;
-};
-
-struct triple_hash {
-    std::size_t operator()(const Triple& t) const {
-        return t.first;
-    }
-};
-
-inline bool operator==(const Triple& t1, const Triple& t2)
-{
-    return t1.first == t2.first && t1.second == t2.second && t1.third == t2.third;
-}
-
-Triple find(std::unordered_map<long long, Triple, triple_hash> triples, long long num)
-{
-    if(find(triples.begin(), triples.end(), num) != triples.end()) 
+    if(triples.find(num) != triples.end()) 
     {
-        Triple t = triples[num];
-        return Triple(t.first, t.second, num);
+        return triples[num];
     }
-    return Triple(-1, -1, -1);
+    return std::tuple<long long, long long, long long>(-1, -1, -1);
 }
 
 /**
- * Time complexity: O(n)
+ * Time complexity: O(n ^ 2)
  */
-Triple get_3_nums(const std::string file_name) 
+std::tuple<long long, long long, long long> get_3_nums(const std::string file_name) 
 {
     std::ifstream file(file_name);
     std::string line;
     std::vector<long long> nums;
-    std::unordered_map<long long, Triple, triple_hash> triples;
+    std::unordered_map<long long, std::tuple<long long, long long, long long>> triples;
     if(file.is_open())
     {
         while (std::getline(file, line))
@@ -55,22 +30,21 @@ Triple get_3_nums(const std::string file_name)
             long long num = std::stoi(line);
             for(long long n : nums)
             {
-                triples.emplace(n + num, Triple(n, num));
+                triples.emplace(n + num, std::tuple<long long, long long, long long>(n, num, -1));
             }
             nums.push_back(num);
         }
         for(long long n : nums) 
         {
-            if(Triple t = find(triples, n); t.first != -1)
+            if(std::tuple<long long, long long, long long> t = find(triples, 2020 - n); std::get<0>(t) != -1)
             {
                 file.close();
-                return t;
+                return std::tuple<long long, long long, long long>(std::get<0>(t), std::get<1>(t), n);
             }
         }
     }
     file.close();
-    Triple t;
-    t.first = -1;
+    std::tuple<long long, long long, long long> t(-1, -1, -1);
     return t;
 }
 
@@ -114,10 +88,10 @@ void part1(const std::string file_name)
 void part2(const std::string file_name)
 {
     std::cout << "======\nPart 2\n======\n";
-    Triple nums = get_3_nums(file_name);
-    if(nums.first != -1) 
+    std::tuple<long long, long long, long long> nums = get_3_nums(file_name);
+    if(std::get<0>(nums) != -1) 
     {
-        long long sum = nums.first * nums.second * nums.third;
+        long long sum = std::get<0>(nums) * std::get<1>(nums) * std::get<2>(nums);
         std::cout << "Result of multiplying = " << sum << ".\n";
     }
     else std::cout << "There is no pair with sum 2020.\n";
