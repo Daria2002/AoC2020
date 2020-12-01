@@ -7,11 +7,7 @@
 
 std::tuple<long long, long long, long long> find(std::unordered_map<long long, std::tuple<long long, long long, long long>> triples, long long num)
 {
-    if(triples.find(num) != triples.end()) 
-    {
-        return triples[num];
-    }
-    return std::tuple<long long, long long, long long>(-1, -1, -1);
+    return triples.find(num) != triples.end() ? triples[num] : std::tuple<long long, long long, long long>(-1, -1, -1);
 }
 
 /**
@@ -23,6 +19,7 @@ std::tuple<long long, long long, long long> get_3_nums(const std::string file_na
     std::string line;
     std::vector<long long> nums;
     std::unordered_map<long long, std::tuple<long long, long long, long long>> triples;
+    std::tuple<long long, long long, long long> t(-1, -1, -1);
     if(file.is_open())
     {
         while (std::getline(file, line))
@@ -36,15 +33,14 @@ std::tuple<long long, long long, long long> get_3_nums(const std::string file_na
         }
         for(long long n : nums) 
         {
-            if(std::tuple<long long, long long, long long> t = find(triples, 2020 - n); std::get<0>(t) != -1)
+            if(t = find(triples, 2020 - n); std::get<0>(t) != -1)
             {
-                file.close();
-                return std::tuple<long long, long long, long long>(std::get<0>(t), std::get<1>(t), n);
+                t = std::tuple<long long, long long, long long>(std::get<0>(t), std::get<1>(t), n);
+                break;
             }
         }
     }
     file.close();
-    std::tuple<long long, long long, long long> t(-1, -1, -1);
     return t;
 }
 
@@ -56,21 +52,21 @@ long long get_num(const std::string file_name)
     std::ifstream file(file_name);
     std::string line;
     std::vector<long long> nums;
+    long long num = -1;
     if(file.is_open())
     {
         while (std::getline(file, line))
         {
-            long long num = std::stoi(line);
-            if(std::find(nums.begin(), nums.end(), num) != nums.end())
+            if(std::find(nums.begin(), nums.end(), std::stoi(line)) != nums.end())
             {
-                file.close();
-                return num;
+                num = std::stoi(line);
+                break;
             }
-            nums.push_back(2020 - num);
+            nums.push_back(2020 - std::stoi(line));
         }
-        file.close();
     }
-    return -1;
+    file.close();
+    return num;
 }
 
 void part1(const std::string file_name)
