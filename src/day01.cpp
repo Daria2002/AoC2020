@@ -95,7 +95,7 @@ void part2(const std::string file_name)
 
 int main() 
 {
-    const std::string file_name = "/home/daria/Documents/AoC2020/input/day01_1.txt";
+    const std::string file_name = "/home/daria/Documents/AoC2020/input/day01.txt";
     part1(file_name);
     std::cout << '\n';
     part2(file_name);
