@@ -40,34 +40,39 @@ Area build_area(const std::string& file_name)
     return area;
 }
 
-int encountered_trees(const Area& area)
+int count_trees(const Area& area, const std::pair<int, int>& slope)
 {
-    constexpr std::pair<int, int> slope (3, 1); // right 3, down 1
-    int count_trees = 0; 
+    int count = 0; 
     for(int row = 0, column = 0; row < area.rows; column += slope.first, row += slope.second)
     {
-        if(area.is_tree(column, row)) count_trees++;
+        if(area.is_tree(column, row)) count++;
     }
-    return count_trees;
+    return count;
 }
 
-void part1(std::string file_name)
+void part1(const Area& area)
 {
     std::cout << "======\nPart 1\n======\n";
-    Area area = build_area(file_name);
-    std::cout << "There are " << encountered_trees(area) << " encountered trees.\n";
+    constexpr std::pair<int, int> slope (3, 1); // right 3, down 1
+    std::cout << "There are " << count_trees(area, slope) << " encountered trees.\n";
 }
 
-void part2(std::string file_name)
+void part2(const Area& area)
 {
     std::cout << "======\nPart 2\n======\n";
+    std::vector<std::pair<int, int>> slopes = { std::make_pair(1, 1), std::make_pair(3, 1), 
+    std::make_pair(5, 1), std::make_pair(7, 1), std::make_pair(1, 2) };
+    long long result = 1;
+    for(const auto slope : slopes) result *= count_trees(area, slope);
+    std::cout << "Encountered trees for different slopes multiplied together = " << result << '\n';
 }
 
 int main()
 {
     const std::string file_name = "/home/daria/Documents/AoC2020/input/day03.txt";
-    part1(file_name);
+    Area area = build_area(file_name);
+    part1(area);
     std::cout << '\n';
-    part2(file_name);
+    part2(area);
     std::cout << '\n';
 }
