@@ -114,28 +114,99 @@ int valid_passports_extra_check(std::vector<Passport> passports)
             }
             if(!valid) continue;
         }
-        // todo: extra check
+        bool valid = true;
+        for(auto pair : p.map)
+        {
+            std::string key = pair.first;
+            std::string val = pair.second;
+            if(key == "byr") 
+            {
+                int val_num = std::stoi(val);
+                if(val_num < 1920 || val_num > 2002) valid = false;
+            }
+            else if(key == "iyr")
+            {
+                int val_num = std::stoi(val);
+                if(val_num < 2010 || val_num > 2020) valid = false;
+            }
+            else if(key == "eyr")
+            {
+                int val_num = std::stoi(val);
+                if(val_num < 2020 || val_num > 2030) valid = false;
+            }
+            else if(key == "hgt")
+            {
+                if(val.size() < 4) 
+                {
+                    valid = false;
+                    break;
+                } 
+                std::string unit = val.substr(val.size() - 2, 2);
+                int val_num = std::stoi(val.substr(0, val.size() - 2));
+                if(unit != "cm" && unit != "in") valid = false; 
+                else if(unit == "cm") {
+                    if(val_num < 150 || val_num > 193) valid = false;
+                }
+                else if(unit == "in") {
+                    if(val_num < 59 || val_num > 76) valid = false;
+                }
+            }
+            else if(key == "hcl")
+            {
+                if(val[0] != '#' || val.size() != 7) valid = false;
+                for(int i = 1; i < val.size(); i++) 
+                {
+                    if((val[i] >= '0' && val[i] <= '9') || (val[i] >= 'a' && val[i] <= 'f')) continue;
+                    else {
+                        valid = false;
+                        break;
+                    }
+                }
+            } 
+            else if(key == "ecl")
+            {
+                if(val != "amb" && val != "blu" && val != "brn" && val != "gry" 
+                && val != "grn" && val != "hzl" && val != "oth") valid = false;
+            }
+            else if(key == "pid")
+            {
+                if(val.size() != 9) valid = false;
+                else {
+                    for(int i = 0; i < val.size(); i++) 
+                    {
+                        if(val[i] < '0' || val[i] > '9')
+                        {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }   
+            }
+        }
+        if(valid) count++;
+        else valid = true;
     }
     return count;
 }
 
-void part1(const std::string file_name)
+void part1(const std::vector<Passport> passports)
 {
     std::cout << "======\nPart 1\n======\n";
-    std::vector<Passport> passports = scan_passports(file_name);
     std::cout << "There are " << valid_passports(passports) << " valid passports.\n";
 }
 
-void part2(const std::string file_name)
+void part2(const std::vector<Passport> passports)
 {
     std::cout << "======\nPart 2\n======\n";
+    std::cout << "There are " << valid_passports_extra_check(passports) << " valid passports.\n";
 }
 
 int main()
 {
     const std::string file_name = "/home/daria/Documents/AoC2020/input/day04.txt";
-    part1(file_name);
+    std::vector<Passport> passports = scan_passports(file_name);
+    part1(passports);
     std::cout << '\n';
-    part2(file_name);
+    part2(passports);
     std::cout << '\n';
 }
