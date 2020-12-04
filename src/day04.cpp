@@ -36,7 +36,7 @@ Passport process_data(std::vector<std::string> lines)
             } 
             else 
             {
-                val = line.substr(dots_indices[i] + 1, line.size() - 1 - dots_indices[i] - 1);
+                val = line.substr(dots_indices[i] + 1, line.size() - 1 - dots_indices[i]);
             }
             passport.map.emplace(key, val);
         }
@@ -100,10 +100,10 @@ int valid_passports_extra_check(std::vector<Passport> passports)
     int count = 0;
     for(Passport p : passports)
     {
+        bool valid = true;
         if(p.map.size() < 7) continue;
         else if(p.map.size() == 7)
         {
-            bool valid = true;
             for(auto pair : p.map)
             {
                 if(pair.first == "cid") 
@@ -114,9 +114,9 @@ int valid_passports_extra_check(std::vector<Passport> passports)
             }
             if(!valid) continue;
         }
-        bool valid = true;
         for(auto pair : p.map)
         {
+            if(!valid) break;
             std::string key = pair.first;
             std::string val = pair.second;
             if(key == "byr") 
@@ -136,19 +136,14 @@ int valid_passports_extra_check(std::vector<Passport> passports)
             }
             else if(key == "hgt")
             {
-                if(val.size() < 4) 
+                if(val.size() < 4) valid = false;
+                else 
                 {
-                    valid = false;
-                    break;
-                } 
-                std::string unit = val.substr(val.size() - 2, 2);
-                int val_num = std::stoi(val.substr(0, val.size() - 2));
-                if(unit != "cm" && unit != "in") valid = false; 
-                else if(unit == "cm") {
-                    if(val_num < 150 || val_num > 193) valid = false;
-                }
-                else if(unit == "in") {
-                    if(val_num < 59 || val_num > 76) valid = false;
+                    std::string unit = val.substr(val.size() - 2, 2);
+                    int val_num = std::stoi(val.substr(0, val.size() - 2));
+                    if(unit != "cm" && unit != "in") valid = false;
+                    else if(unit == "cm" && (val_num < 150 || val_num > 193)) valid = false;
+                    else if(unit == "in" && (val_num < 59 || val_num > 76)) valid = false;
                 }
             }
             else if(key == "hcl")
@@ -156,8 +151,7 @@ int valid_passports_extra_check(std::vector<Passport> passports)
                 if(val[0] != '#' || val.size() != 7) valid = false;
                 for(int i = 1; i < val.size(); i++) 
                 {
-                    if((val[i] >= '0' && val[i] <= '9') || (val[i] >= 'a' && val[i] <= 'f')) continue;
-                    else {
+                    if(!((val[i] >= '0' && val[i] <= '9') || (val[i] >= 'a' && val[i] <= 'f'))) {
                         valid = false;
                         break;
                     }
@@ -171,7 +165,8 @@ int valid_passports_extra_check(std::vector<Passport> passports)
             else if(key == "pid")
             {
                 if(val.size() != 9) valid = false;
-                else {
+                else 
+                {
                     for(int i = 0; i < val.size(); i++) 
                     {
                         if(val[i] < '0' || val[i] > '9')
@@ -179,12 +174,11 @@ int valid_passports_extra_check(std::vector<Passport> passports)
                             valid = false;
                             break;
                         }
-                    }
-                }   
+                    } 
+                }
             }
         }
         if(valid) count++;
-        else valid = true;
     }
     return count;
 }
