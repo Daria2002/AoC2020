@@ -63,7 +63,6 @@ std::vector<Color> get_colors(const std::string file_name)
             process_children(children, children_colors, children_quantity);
             color.children_colors = children_colors;
             color.children_quantity = children_quantity;
-            for(int i = 0; i < color.children_quantity.size(); i++) std::cout << "quant = " << color.children_quantity[i] << '\n';
             colors.push_back(color);
             children_quantity.clear();
             children_colors.clear();
@@ -81,24 +80,25 @@ void part1(std::vector<Color> colors)
     std::cout << count << " bag colors contain at least one shiny gold bag.\n";
 }
 
-long long count_bags_in_shiny_gold(std::vector<Color> all, std::vector<std::string> children_names, std::vector<int> children_quantity)
+long long count_bags_in_shiny_gold(std::vector<Color> all, std::vector<std::string> names, std::vector<int> quantity)
 {
     long long count = 0;
-    for(int i = 0; i < children_names.size(); i++)
+    for(int i = 0; i < names.size(); i++)
     {
+        bool parent = false;
         for(Color color : all)
         {
-            if(color.name == children_names[i]) 
+            if(color.name == names[i]) 
             {
-                std::vector<std::string> names = color.children_colors;
-                std::vector<int> quantity = color.children_quantity;
-                count += children_quantity[i] * count_bags_in_shiny_gold(all, names, quantity);
+                parent = true;
+                count += quantity[i] * count_bags_in_shiny_gold(all, color.children_colors, color.children_quantity);
                 break;
             }
         }
+        count += quantity[i];
     }
-    std::cout << "ret count = " << count << '\n';
-    return count == 0 ? 1 : count;
+    std::cout << "count = " << count << '\n';
+    return count;
 }
 
 void part2(std::vector<Color> colors)
