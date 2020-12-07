@@ -7,10 +7,10 @@
 int sum(std::vector<std::unordered_set<char>> groups)
 {
     int count = 0;
-    for(std::unordered_set<char> group : groups)
-    {
-        count += group.size();
-    }
+    const auto set_size = [&](const auto &el) {
+        count += el.size();
+    }; 
+    std::for_each(groups.begin(), groups.end(), set_size);
     return count;
 }
 
@@ -64,11 +64,12 @@ std::vector<std::unordered_set<char>> get_groups2(const std::string file_name)
         {
             if(line == "")
             {
-                for(int i = 0; i < all_questions.size(); i++)
-                {
-                    if(std::count(all_questions.begin(), all_questions.end(), all_questions[i]) == people_in_group) 
-                        questions.insert(all_questions[i]);
-                }
+
+                const auto add_question = [&](const auto &el) {
+                    if(std::count(all_questions.begin(), all_questions.end(), el) == people_in_group)
+                        questions.insert(el);
+                };
+                std::for_each(all_questions.begin(), all_questions.end(), add_question);
                 groups.push_back(questions);
                 people_in_group = 0;
                 all_questions.clear();
@@ -77,10 +78,7 @@ std::vector<std::unordered_set<char>> get_groups2(const std::string file_name)
             else 
             {
                 people_in_group++;
-                for(int i = 0; i < line.size(); i++)
-                {
-                    all_questions.push_back(line[i]);
-                }
+                std::for_each(line.begin(), line.end(), [&](const auto &el){all_questions.push_back(el);});
             }
         }
         groups.push_back(questions);
