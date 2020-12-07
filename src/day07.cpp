@@ -9,7 +9,7 @@ class Color
         Color() = default;
         Color(std::string _name) : name(_name) {};
         std::string name;
-        std::vector<Color> children_colors;
+        std::vector<std::string> children_colors;
         std::vector<int> children_quantity;
         bool shiny_gold(std::vector<Color> colors)
         {
@@ -29,13 +29,13 @@ class Color
         }
 };
 
-void process_children(std::string children, std::vector<Color>& children_colors, std::vector<int>& children_quantity)
+void process_children(std::string children, std::vector<std::string>& children_colors, std::vector<int>& children_quantity)
 {
     std::string tmp_child;
     while(true)
     {
         tmp_child = children.substr(0, children.find(" bag"));
-        children_quantity.push_back(tmp_child[0]);
+        children_quantity.push_back(tmp_child[0] - '0');
         children_colors.push_back(children.substr(2, tmp_child.size() - 2));
         if(children.find(", ") == std::string::npos) return;
         children = children.substr(children.find(", ") + 2, children.size() - children.find(", "));
@@ -48,7 +48,7 @@ std::vector<Color> get_colors(const std::string file_name)
     std::string line;
     std::vector<Color> colors;
     std::string children;
-    std::vector<Color> children_colors;
+    std::vector<std::string> children_colors;
     std::vector<int> children_quantity;
     std::string color_name;
     if(file.is_open())
@@ -63,6 +63,7 @@ std::vector<Color> get_colors(const std::string file_name)
             process_children(children, children_colors, children_quantity);
             color.children_colors = children_colors;
             color.children_quantity = children_quantity;
+            for(int i = 0; i < color.children_quantity.size(); i++) std::cout << "quant = " << color.children_quantity[i] << '\n';
             colors.push_back(color);
             children_quantity.clear();
             children_colors.clear();
@@ -80,15 +81,38 @@ void part1(std::vector<Color> colors)
     std::cout << count << " bag colors contain at least one shiny gold bag.\n";
 }
 
-long long count_bags_in_shiny_gold(std::vector<Color> colors)
+long long count_bags_in_shiny_gold(std::vector<Color> all, std::vector<std::string> children_names, std::vector<int> children_quantity)
 {
-    return 0;
+    long long count = 0;
+    for(int i = 0; i < children_names.size(); i++)
+    {
+        for(Color color : all)
+        {
+            if(color.name == children_names[i]) 
+            {
+                std::vector<std::string> names = color.children_colors;
+                std::vector<int> quantity = color.children_quantity;
+                count += children_quantity[i] * count_bags_in_shiny_gold(all, names, quantity);
+                break;
+            }
+        }
+    }
+    std::cout << "ret count = " << count << '\n';
+    return count == 0 ? 1 : count;
 }
 
 void part2(std::vector<Color> colors)
 {
     std::cout << "======\nPart 2\n======\n";
-    std::cout << count_bags_in_shiny_gold(colors) << " individual bags are required inside single shiny gold bag.\n";
+    for(Color color : colors)
+    {
+        if(color.name == "shiny gold") 
+        {
+            long long count = count_bags_in_shiny_gold(colors, color.children_colors, color.children_quantity);
+            std::cout << count << " individual bags are required inside single shiny gold bag.\n";
+            break;
+        }
+    } 
 }
 
 int main()
