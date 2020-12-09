@@ -62,22 +62,68 @@ long long not_sum(const std::string file_name)
     return -1;
 }
 
-void part1(std::string file_name)
+long long part1(std::string file_name)
 {
     std::cout << "======\nPart 1\n======\n";
-    std::cout << "First value that is not sum is " << not_sum(file_name);
+    long long invalid_num = not_sum(file_name);
+    std::cout << "First value that is not sum is " << invalid_num << '\n';
+    return invalid_num;
 }
 
-void part2(std::string file_name)
+long long get_biggest_or_smallest(std::list<long long> elements, bool smallest)
+{
+    int result = smallest ? std::numeric_limits<int>::max() : std::numeric_limits<int>::min();
+    for(long long element : elements)
+    {
+        if((smallest && element < result) || (!smallest && element > result))
+        {
+            result = element;
+        }
+    }
+    return result;
+}
+
+void part2(std::string file_name, long long total_sum)
 {
     std::cout << "======\nPart 2\n======\n";
+    std::list<long long> elements;
+    long long current_sum = 0;
+    std::ifstream file(file_name);
+    std::string line;
+    std::list<long long> all_elements;
+    long long not_sum;
+    long long el;
+    if(file.is_open())
+    {
+        while (std::getline(file, line) && current_sum != total_sum) 
+        {
+            el = std::stoi(line);
+            if(el == total_sum) 
+            {
+                std::cout << "NOK\n";
+                break;
+            }
+            elements.push_back(el);
+            current_sum += el;
+            while(current_sum > total_sum) 
+            {
+                long long el_to_remove = elements.front();
+                elements.pop_front();
+                current_sum -= el_to_remove;
+            }
+        }
+    }
+    file.close();
+    long long smallest = get_biggest_or_smallest(elements, true);
+    long long biggest = get_biggest_or_smallest(elements, false);
+    std::cout << "Encryption weakness = " << smallest + biggest << '\n';
 }
 
 int main()
 {
     const std::string file_name = "/home/daria/Documents/AoC2020/input/day09.txt";
-    part1(file_name);
+    long long res1 = part1(file_name);
     std::cout << '\n';
-    part2(file_name);
+    part2(file_name, res1);
     std::cout << '\n';
 }
