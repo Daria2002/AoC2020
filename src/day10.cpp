@@ -1,7 +1,6 @@
 #include <iostream>
-#include <unordered_map>
-#include <unordered_set>
 #include <list>
+#include <vector>
 #include <algorithm>
 #include <fstream>
 #include <limits>
@@ -52,18 +51,39 @@ void part1(std::list<int> elements)
     std::cout << "1-jolt differences * 3-jolt differences = " << diff.diff1 * diff.diff3 << '\n';
 }
 
-std::vector<std::vector<int>> ways_to_connect(std::list<int> elements)
+void ways_to_connect(std::vector<int> elements, int index, long long& counter, int last)
 {
-    std::vector<std::vector<int>> ways;
-    // todo
-    return ways;
+    if(index < 0) 
+    {
+        counter++;
+        std::cout << "counter = " << counter << '\n';
+        return;
+    }
+    // add element
+    ways_to_connect(elements, index - 1, counter, elements[index]);
+    if(index + 1 < elements.size() && last - elements[index - 1] <= 3) // check if element can be skiped
+    {
+        ways_to_connect(elements, index - 1, counter, last);
+    }
+    return;
+}
+
+long long ways_to_connect(std::list<int> elements)
+{
+    std::vector<std::string> ways;
+    std::vector<int> elements_vector;
+    for(int el : elements) elements_vector.push_back(el);
+    int size = elements_vector.size();
+    long long counter = 0;
+    ways_to_connect(elements_vector, size - 1, counter, elements_vector[size - 1] + 3);
+    // for(std::string way : ways) std::cout << "way = " << way << '\n'; 
+    return counter;
 }
 
 void part2(std::list<int> elements)
 {
     std::cout << "======\nPart 2\n======\n";
-    std::vector<std::vector<int>> ways = ways_to_connect(elements);
-    std::cout << "Distinct ways to arrange the adapters to connect the charging outlet to the device = " << ways.size() << '\n';
+    std::cout << "Distinct ways to arrange the adapters to connect the charging outlet to the device = " << ways_to_connect(elements) << '\n';
 }
 
 int main()
