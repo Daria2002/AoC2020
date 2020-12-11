@@ -107,19 +107,99 @@ void part1(std::vector<std::vector<char>> elements)
 {
     std::cout << "======\nPart 1\n======\n";
     int i = 0;
-    print_elements(elements);
+    // print_elements(elements);
     while (change(elements))
+    {   
+        i++;
+        // std::cout << "\n\nChange no. " << i << "\n\n";
+        // print_elements(elements);
+    }
+    std::cout << "\nOccupied seats = " << occupied_seats(elements) << '\n';
+}
+
+std::vector<char> get_adjecent_elements(std::vector<std::vector<char>> elements, int curr_row, int curr_column)
+{
+    std::vector<char> adjecent_elements;
+    std::vector<int> row_deltas = {-1, 1, -1, 0, 1, 0, 1, -1};
+    std::vector<int> col_deltas = {-1, 1, 0, -1, 0, 1, -1, 1};
+    for(int i = 0; i < row_deltas.size(); i++)
+    {
+        int tmp_row = curr_row + row_deltas[i];
+        int tmp_col = curr_column + col_deltas[i];
+        if(tmp_row < 0 || tmp_row > elements.size() - 1 || tmp_col < 0 || tmp_col > elements[0].size() - 1) continue;
+        bool skip = false;
+        while(elements[tmp_row][tmp_col] == '.')
+        {
+            tmp_row += row_deltas[i];
+            tmp_col += col_deltas[i];
+            if(tmp_row < 0 || tmp_row > elements.size() - 1 || tmp_col < 0 || tmp_col > elements[0].size() - 1) 
+            {
+                skip = true;
+                break;
+            }
+        }
+        if(!skip)
+        {
+            adjecent_elements.push_back(elements[tmp_row][tmp_col]);
+        }
+    }
+    return adjecent_elements;
+}
+
+bool change_new_rules(std::vector<std::vector<char>>& elements)
+{
+    std::vector<std::vector<char>> result = elements;
+    bool change_happened = false;
+    for(int row = 0; row < elements.size(); row++)
+    {
+        for(int column = 0; column < elements[0].size(); column++)
+        {                
+            std::vector<char> adjecent_elements = get_adjecent_elements(elements, row, column);
+            if(elements[row][column] == 'L') 
+            {
+                bool change = true;
+                for(char adjecent_element : adjecent_elements)
+                {
+                    if(adjecent_element == '#')
+                    {
+                        change = false;
+                        break;
+                    } 
+                }
+                if(change)
+                {
+                    result[row][column] = '#';
+                    change_happened = true;
+                }
+            } 
+            else if(elements[row][column] == '#')
+            {
+                int occupied_adjecent_seats = std::count_if(adjecent_elements.begin(), adjecent_elements.end(), [&](const auto& el) { return el == '#'; });
+                if(occupied_adjecent_seats >= 5)
+                {
+                    result[row][column] = 'L';
+                    change_happened = true;
+                }
+            }
+        }
+    }
+    elements = result;
+    return change_happened;
+}
+
+
+void part2(std::vector<std::vector<char>> elements)
+{
+    std::cout << "======\nPart 2\n======\n";
+    int i = 0;
+    print_elements(elements);
+    while (change_new_rules(elements))
     {   
         i++;
         std::cout << "\n\nChange no. " << i << "\n\n";
         print_elements(elements);
     }
     std::cout << "\nOccupied seats = " << occupied_seats(elements) << '\n';
-}
-
-void part2(std::vector<std::vector<char>> elements)
-{
-    std::cout << "======\nPart 2\n======\n";
 }
 
 int main()
