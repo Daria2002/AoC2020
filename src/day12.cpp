@@ -104,7 +104,7 @@ Position execute_instructions_actual(std::vector<Instruction> instructions)
     Position ship(0, 0);
     for(Instruction instruction : instructions)
     {
-        std::cout << instruction;
+        // std::cout << instruction;
         if(instruction.action == 'N' || instruction.action == 'S')
         {
             waypoint.north += (instruction.value * (instruction.action == 'N' ? 1 : -1));
@@ -135,8 +135,8 @@ Position execute_instructions_actual(std::vector<Instruction> instructions)
             waypoint.north = north * (int) cos(-M_PI / 180 * instruction.value) - east * (int) sin(-M_PI / 180 * instruction.value);
             waypoint.east = north * (int) sin(-M_PI / 180 * instruction.value) + east * (int) cos(-M_PI / 180 * instruction.value);
         }
-        std::cout << "Ship: north = " << ship.north << ", east = " << ship.east << '\n';
-        std::cout << "Waypoint: north = " << waypoint.north << ", east = " << waypoint.east << '\n';
+        // std::cout << "Ship: north = " << ship.north << ", east = " << ship.east << '\n';
+        // std::cout << "Waypoint: north = " << waypoint.north << ", east = " << waypoint.east << '\n';
         // std::string empty_str;
         // std::getline(std::cin, empty_str);
     }
