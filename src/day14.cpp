@@ -12,9 +12,9 @@
 #include <limits>
 #include <cmath>
 
-inline bool is_set(unsigned long long num, int bit_index)
+inline bool is_set(long long num, int bit_index)
 {
-    return (num & (1ULL << bit_index));
+    return (num & (1LL << bit_index));
 }
 
 inline bool is_set(std::string num, int bit_index)
@@ -22,26 +22,26 @@ inline bool is_set(std::string num, int bit_index)
     return num[bit_index] == '1';
 }
 
-unsigned long long process(unsigned long long value, std::string mask)
+long long process(long long value, std::string mask)
 {
-    unsigned long long result = 0;
+    long long result = 0;
     for(int i = mask.size() - 1; i >= 0; i--)
     {
         if(mask[i] == 'X' && is_set(value, mask.size() - 1 - i) || mask[i] != 'X' && is_set(mask, i))
         {
-            result |= (1ULL << (mask.size() - 1 - i));
+            result |= (1LL << (mask.size() - 1 - i));
         }
     }
     return result;
 }
 
-std::map<unsigned long long, unsigned long long> get_program(const std::string file_name)
+std::map<long long, long long> get_program(const std::string file_name)
 {
     std::ifstream file(file_name);
     std::string line;
     std::string mask = "";
-    std::map<unsigned long long, unsigned long long> map;
-    std::map<unsigned long long, unsigned long long> result_map;
+    std::map<long long, long long> map;
+    std::map<long long, long long> result_map;
     if(file.is_open())
     {
         while (std::getline(file, line)) 
@@ -58,8 +58,8 @@ std::map<unsigned long long, unsigned long long> get_program(const std::string f
             }
             else if(line.find("mem") == 0) // at first index
             {
-                unsigned long long mem = std::stoull(line.substr(line.find("[") + 1, line.find("]") - line.find("[") - 1));
-                unsigned long long val = std::stoull(line.substr(line.find("=") + 2));
+                long long mem = std::stoll(line.substr(line.find("[") + 1, line.find("]") - line.find("[") - 1));
+                long long val = std::stoll(line.substr(line.find("=") + 2));
                 map[mem] = val;
             }
         }
@@ -70,7 +70,6 @@ std::map<unsigned long long, unsigned long long> get_program(const std::string f
         }
     }
     file.close();
-    std::cout << "result map size = " << result_map.size() << '\n';
     return result_map;
 }
 
@@ -78,9 +77,9 @@ void part1(std::string file_name)
 {
     std::cout << "======\nPart 1\n======\n";
     // key - memory, val - value
-    std::map<unsigned long long, unsigned long long> result_map = get_program(file_name);
-    unsigned long long result = std::accumulate(std::begin(result_map), std::end(result_map),
-    0, [](unsigned long long previous, const std::pair<unsigned long long, unsigned long long>& p) { return previous + p.second; });
+    unsigned long long result = 0;
+    std::map<long long, long long> result_map = get_program(file_name);
+    for(auto pair : result_map) result += pair.second;
     std::cout << "Sum of all values left in memory = " << result << '\n';
 }
 
