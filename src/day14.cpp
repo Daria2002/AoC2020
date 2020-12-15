@@ -10,42 +10,36 @@
 #include <map>
 #include <sstream>
 #include <limits>
+#include <bitset>
 #include <cmath>
+
+typedef unsigned long long ull;
+constexpr int mask_size = 36;
 
 class Computer
 {
     public:
-        inline bool is_set(long long num, int bit_index)
-        {
-            return (num & (1LL << bit_index));
-        }
-
-        inline bool is_set(std::string num, int bit_index)
-        {
-            return num[bit_index] == '1';
-        }
-
         long long apply_mask(long long value, std::string mask)
         {
-            long long result = 0;
-            for(int i = mask.size() - 1; i >= 0; i--)
+            std::string value_str = std::bitset<mask_size>(value).to_string();
+            for(long long i = mask_size - 1; i >= 0; i--)
             {
-                if(mask[i] == 'X' && is_set(value, mask.size() - 1 - i) || mask[i] != 'X' && is_set(mask, i))
+                if(mask[i] != 'X')
                 {
-                    result |= (1LL << (mask.size() - 1 - i));
+                    value_str[i] = mask[i];
                 }
             }
-            return result;
+            return std::bitset<mask_size>(value_str).to_ullong();
         }
 
-        std::map<long long, long long> result_map;
-        unsigned long long memory_sum = 0; 
+        std::map<ull, ull> result_map;
 
-        unsigned long long sum()
+        ull sum()
         {
-            if(memory_sum == 0)
-                for(auto pair : result_map) memory_sum += pair.second;
-            return memory_sum;
+            ull result = std::accumulate(std::begin(result_map), std::end(result_map), 
+            0ULL, [](const std::size_t previous, const std::pair<ull, ull>& p)
+            { return previous + p.second; });
+            return result;
         }
 
         void process(const std::string file_name)
@@ -83,71 +77,126 @@ class Computer
             }
             file.close();
         }
+  
+        template <typename T>
+        std::vector<std::vector<T>> get_subsets(const std::vector<T> &set) {
+            auto n = pow(2, set.size()) - 1;
+            std::vector<std::vector<T>> res;
+            for (auto i = 0; i < n; i++) {
+                auto binary_str = std::bitset<128>(i).to_string();
+                std::vector<T> subset;
+                auto set_iter = 0;
+                for (auto j = binary_str.size() - 1; j >= binary_str.size() - set.size();
+                    j--) {
+                char check = binary_str.at(j);
+                if (check == '1') {
+                    subset.push_back(set.at(set_iter));
+                }
+                set_iter++;
+                }
+                res.emplace_back(subset);
+            }
+            
+            res.emplace_back(set);
+            return res;
+        }
 
-        std::vector<long long> apply_mask_on_address(long long address, std::string mask)
+        std::vector<ull> apply_mask_on_address(ull address, std::string mask)
         {
-            std::vector<long long> results;
-            std::string result;
-            //todo
-            for(int i = mask.size() - 1; i >= 0; i--)
+            std::vector<ull> results;
+            std::vector<int> x_indices;
+            std::string result = std::bitset<36>(address).to_string();
+            std::string address_str = std::bitset<36>(address).to_string();
+            for(int i = 0; i < 36; i++)
             {
-                // if(mask[i] != 'X' && is_set(mask, i))
-                // {
-                //     result |= (1LL << (mask.size() - 1 - i));
-                // }
-                // else if(mask[i] == 'X')
-                // {
-                //     result |= (1LL << (mask.size() - 1 - i));
-                // }
+                if(mask[i] != '0')
+                {
+                    result[i] = mask[i];
+                } 
+            }
+            for(int i = 0; i < mask_size; i++) 
+            {
+                if(result[i] == 'X') 
+                {
+                    x_indices.push_back(i);
+                }
+            }
+            std::vector<std::vector<int>> x_indices_combinations = get_subsets(x_indices);
+            std::string initial_address = result;
+            for(int i = 0; i < 36; i++) 
+            {
+                if(initial_address[i] == 'X') 
+                {
+                    initial_address[i] = '0';
+                }
+            }
+            for(const auto& combination : x_indices_combinations)
+            {
+                std::string tmp = initial_address;
+                for(const auto& index : combination)
+                {
+                    tmp[index] = '1';
+                }
+                results.push_back(std::bitset<mask_size>(tmp).to_ullong());
             }
             return results;
         }
 
-        std::map<long long, long long> decoder_map;
-        unsigned long long sum_decoder = 0; 
+        std::map<ull, ull> decoder_map;
 
         void decode(const std::string file_name)
         {
             std::ifstream file(file_name);
             std::string line;
             std::string mask = "";
-            std::map<long long, long long> map;
+            std::vector<ull> memories;
+            std::vector<ull> values;
             if(file.is_open())
             {
                 while (std::getline(file, line)) 
                 {
-                    // todo
                     if(line.find("mask") == 0) // at first index 
                     {
                         // process previous
-                        for(auto pair : map)
+                        for(int i = 0; i < memories.size(); i++)
                         {
-                            result_map[pair.first] = apply_mask(pair.second, mask);
+                            std::vector<ull> addresses = apply_mask_on_address(memories[i], mask);
+                            for(ull address : addresses)
+                            {
+                                decoder_map[address] = values[i];
+                            }
                         }
                         mask = line.substr(line.find("=") + 2);
-                        map.clear();
+                        memories.clear();
+                        values.clear();
                     }
                     else if(line.find("mem") == 0) // at first index
                     {
-                        long long mem = std::stoll(line.substr(line.find("[") + 1, line.find("]") - line.find("[") - 1));
-                        long long val = std::stoll(line.substr(line.find("=") + 2));
-                        map[mem] = val;
+                        ull mem = std::stoull(line.substr(line.find("[") + 1, line.find("]") - line.find("[") - 1));
+                        ull val = std::stoull(line.substr(line.find("=") + 2));
+                        memories.push_back(mem);
+                        values.push_back(val);
                     }
                 }
                 // process last one
-                for(auto pair : map)
+                for(int i = 0; i < memories.size(); i++)
                 {
-                    result_map[pair.first] = apply_mask(pair.second, mask);
+                    std::vector<ull> addresses = apply_mask_on_address(memories[i], mask);
+                    for(ull address : addresses)
+                    {
+                        decoder_map[address] = values[i];
+                    }
                 }
             }
             file.close();
         }
 
-        unsigned long long decoder_sum()
+        ull decoder_sum()
         {
-            if(sum_decoder == 0)
-                for(auto pair : decoder_map) sum_decoder += pair.second;
-            return sum_decoder;
+            ull result = std::accumulate(std::begin(decoder_map), std::end(decoder_map), 
+            0ULL, [](const std::size_t previous, const std::pair<ull, ull>& p)
+            { return previous + p.second; });
+            return result;
         }
 };
 

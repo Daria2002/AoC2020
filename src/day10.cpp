@@ -68,6 +68,7 @@ void ways_to_connect_recursive(std::vector<int> elements, int index, long long& 
     }
     return;
 }
+
 std::vector<std::string> split(const std::string &s, char delim) 
 { 
     std::vector<std::string> elems; 
