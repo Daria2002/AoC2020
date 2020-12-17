@@ -214,7 +214,7 @@ class Scanner
             map_field_value = connect_fields_to_values();
         }
 
-        int error_rate()
+        std::vector<int> get_errors()
         {
             std::vector<int> errors;
             for(std::vector<int> nearby_ticket : nearby_tickets)
@@ -237,22 +237,28 @@ class Scanner
                     }
                 }
             }
+            return errors;  
+        }
+
+        int error_rate()
+        {
+            std::vector<int> errors = get_errors();
             int err_rate = std::accumulate(std::begin(errors), std::end(errors), 
             0, [](const std::size_t previous, const int el)
             { return previous + el; });
             return err_rate;
         }
 
+        int valid_value(std::pair<std::string, int> pair, const std::string& name)
+        {
+            return pair.first.find(name) == 0 ? pair.second : 1;
+        }
+
         long long multiplication(const std::string& name)
         {
-            long long multiplication = 1LL;
-            for(auto field_value_pair : map_field_value)
-            {
-                if(field_value_pair.first.find(name) == 0)
-                {
-                    multiplication *= field_value_pair.second;
-                }
-            }
+            long long multiplication = std::accumulate(std::begin(map_field_value), std::end(map_field_value), 
+            1LL, [&](const long long previous, const std::pair<std::string, int> pair)
+            { return previous * valid_value(pair, name); });
             return multiplication;
         }
 };
