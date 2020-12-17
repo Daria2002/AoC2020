@@ -20,7 +20,7 @@ class Field
         {
             for(int el : elements) if(!in_range(el)) return false;
             return true;
-        }
+        } 
 };
 
 bool operator==(const Field& f1, const Field& f2)
@@ -74,24 +74,94 @@ class Scanner
             return elements;
         }
 
+        int count_single(std::unordered_map<std::string, std::vector<int>> map_field_index)
+        {
+            int count = 0;
+            for(auto pair : map_field_index)
+            {
+                if(pair.second.size() == 1) count++;
+            }
+            return count;
+        }
+
         std::unordered_map<std::string, int> connect_fields_to_values()
         {
+            std::vector<std::vector<int>> columns;
+            std::vector<int> skip_row;
             std::unordered_map<std::string, int> map;
-            int index = 0;
-            for(int i = 0; i < fields.size(); i++)
+            for(int row = 0; row < nearby_tickets.size(); row++)
             {
-                for(std::vector<int> nearby_ticket : nearby_tickets)
+                bool ok = true;
+                for(int column = 0; column < nearby_tickets[0].size(); column++)
                 {
-                    if(fields[i].is_compatible(nearby_ticket))
+                    bool check_fields = false;
+                    for(Field field : fields)
                     {
-                        map[fields[i].name] = user_ticket[i];
-                        std::cout << "value = " << user_ticket[index] << '\n';
-                        std::cout << "index = " << index << '\n';
-                        std::cout << "field name = " << fields[i].name << '\n';
-                        i++;
+                        if(field.in_range(nearby_tickets[row][column]))
+                        {
+                            check_fields = true;
+                            break;
+                        }
+                    }
+                    if(!check_fields) 
+                    {
+                        ok = false;
                         break;
                     }
                 }
+                if(!ok) skip_row.push_back(row);
+            }
+            for(int column = 0; column < nearby_tickets[0].size(); column++)
+            {
+                std::vector<int> column_vector;
+                for(int row = 0; row < nearby_tickets.size(); row++)
+                {
+                    if(std::find(skip_row.begin(), skip_row.end(), row) != skip_row.end()) continue;
+                    column_vector.push_back(nearby_tickets[row][column]);
+                }
+                columns.push_back(column_vector);
+            }
+            // for(int i = 0; i < columns.size(); i++)
+            // {
+            //     for(int j = 0; j < columns[0].size(); j++)
+            //         std::cout << columns[i][j] << ',';
+            //     std::cout << "\n";
+            // }
+
+            /// key - field name, value - column indexes
+            std::unordered_map<std::string, std::vector<int>> map_field_index;
+            for(int i = 0; i < columns.size(); i++)
+            {
+                for(int j = 0; j < fields.size(); j++)
+                {
+                    if(fields[j].is_compatible(columns[i]))
+                    {
+                        map_field_index[fields[j].name].push_back(i);
+                    }
+                }
+            }
+
+            while(count_single(map_field_index) != map_field_index.size())
+            {
+                for(auto& pair : map_field_index)
+                {
+                    if(map_field_index[pair.first].size() == 1)
+                    {
+                        for(auto& pair2 : map_field_index)
+                        {
+                            auto it = std::find(pair2.second.begin(), pair2.second.end(), map_field_index[pair.first][0]);
+                            if(pair2.second.size() > 1 && it != pair2.second.end())
+                            {
+                                pair2.second.erase(it);
+                            }
+                        }
+                    }
+                }
+            }
+
+            for(auto& pair : map_field_index)
+            {
+                map[pair.first] = user_ticket[pair.second[0]];
             }
             return map;
         }
@@ -165,9 +235,9 @@ class Scanner
             long long multiplication = 1LL;
             for(auto field_value_pair : map_field_value)
             {
-                if(field_value_pair.first.find(name) < field_value_pair.first.size())
+                if(field_value_pair.first.find(name) == 0)
                 {
-                    std::cout << "val = " << field_value_pair.second << '\n';
+                    std::cout << "\nval = " << field_value_pair.second << '\n';
                     multiplication *= field_value_pair.second;
                 }
             }
