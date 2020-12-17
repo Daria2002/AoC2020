@@ -28,14 +28,6 @@ bool operator==(const Field& f1, const Field& f2)
     return f1.name == f2.name;
 }
 
-std::ostream& operator<<(std::ostream& os, const Field& field)
-{
-    os << "field name = " << field.name << '\n';
-    os << "field range1 = [" << field.range1.first << ", " << field.range1.second << "]\n";
-    os << "field range2 = [" << field.range2.first << ", " << field.range2.second << "]\n";
-    return os;
-}
-
 class Scanner
 {
     public:
@@ -76,12 +68,21 @@ class Scanner
 
         int count_single(std::unordered_map<std::string, std::vector<int>> map_field_index)
         {
-            int count = 0;
-            for(auto pair : map_field_index)
-            {
-                if(pair.second.size() == 1) count++;
-            }
+            int count = std::count_if(map_field_index.begin(), map_field_index.end(), 
+            [&](std::pair<std::string, std::vector<int>> pair) { return pair.second.size() == 1; });
             return count;
+        }
+
+        void remove_index_for_all_except(std::unordered_map<std::string, std::vector<int>>& map_field_index, std::string matching_field)
+        {
+            for(auto& pair2 : map_field_index)
+            {
+                auto it = std::find(pair2.second.begin(), pair2.second.end(), map_field_index[matching_field][0]);
+                if(pair2.second.size() > 1 && it != pair2.second.end())
+                {
+                    pair2.second.erase(it);
+                }
+            }
         }
 
         std::unordered_map<std::string, int> arrange_fields(std::unordered_map<std::string, std::vector<int>>& map_field_index)
@@ -93,14 +94,7 @@ class Scanner
                 {
                     if(map_field_index[pair.first].size() == 1)
                     {
-                        for(auto& pair2 : map_field_index)
-                        {
-                            auto it = std::find(pair2.second.begin(), pair2.second.end(), map_field_index[pair.first][0]);
-                            if(pair2.second.size() > 1 && it != pair2.second.end())
-                            {
-                                pair2.second.erase(it);
-                            }
-                        }
+                        remove_index_for_all_except(map_field_index, pair.first);
                     }
                 }
             }
