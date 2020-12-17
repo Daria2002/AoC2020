@@ -84,8 +84,9 @@ class Scanner
             return count;
         }
 
-        void arrange_fields(std::unordered_map<std::string, std::vector<int>>& map_field_index)
+        std::unordered_map<std::string, int> arrange_fields(std::unordered_map<std::string, std::vector<int>>& map_field_index)
         {
+            std::unordered_map<std::string, int> arranged_map;
             while(count_single(map_field_index) != map_field_index.size())
             {
                 for(auto& pair : map_field_index)
@@ -103,13 +104,15 @@ class Scanner
                     }
                 }
             }
+            std::transform(map_field_index.begin(), map_field_index.end(), std::inserter(arranged_map, arranged_map.end()),
+               [=](std::pair<std::string, std::vector<int>> pair) 
+               { return std::make_pair(pair.first, user_ticket[pair.second[0]]); });
+            return arranged_map;
         }
 
-        std::unordered_map<std::string, int> connect_fields_to_values()
+        std::vector<int> get_rows_to_skip()
         {
-            std::vector<std::vector<int>> columns;
-            std::vector<int> skip_row;
-            std::unordered_map<std::string, int> map;
+            std::vector<int> rows_to_skip;
             for(int row = 0; row < nearby_tickets.size(); row++)
             {
                 bool ok = true;
@@ -130,45 +133,50 @@ class Scanner
                         break;
                     }
                 }
-                if(!ok) skip_row.push_back(row);
+                if(!ok) rows_to_skip.push_back(row);
             }
+            return rows_to_skip;
+        }
+        
+        std::vector<std::vector<int>> get_columns_with_valid_rows(std::vector<int> rows_to_skip)
+        {
+            std::vector<std::vector<int>> columns;
             for(int column = 0; column < nearby_tickets[0].size(); column++)
             {
                 std::vector<int> column_vector;
                 for(int row = 0; row < nearby_tickets.size(); row++)
                 {
-                    if(std::find(skip_row.begin(), skip_row.end(), row) != skip_row.end()) continue;
+                    if(std::find(rows_to_skip.begin(), rows_to_skip.end(), row) != rows_to_skip.end()) continue;
                     column_vector.push_back(nearby_tickets[row][column]);
                 }
                 columns.push_back(column_vector);
             }
-            // for(int i = 0; i < columns.size(); i++)
-            // {
-            //     for(int j = 0; j < columns[0].size(); j++)
-            //         std::cout << columns[i][j] << ',';
-            //     std::cout << "\n";
-            // }
+            return columns;
+        }
 
-            /// key - field name, value - column indexes
-            std::unordered_map<std::string, std::vector<int>> map_field_index;
+        std::unordered_map<std::string, std::vector<int>> map_fields_with_all_possible_columns(std::vector<std::vector<int>> columns)
+        {
+            std::unordered_map<std::string, std::vector<int>> fields_with_all_possible_columns;
             for(int i = 0; i < columns.size(); i++)
             {
                 for(int j = 0; j < fields.size(); j++)
                 {
                     if(fields[j].is_compatible(columns[i]))
                     {
-                        map_field_index[fields[j].name].push_back(i);
+                        fields_with_all_possible_columns[fields[j].name].push_back(i);
                     }
                 }
             }
+            return fields_with_all_possible_columns;
+        }
 
-            arrange_fields(map_field_index);
-
-            for(auto& pair : map_field_index)
-            {
-                map[pair.first] = user_ticket[pair.second[0]];
-            }
-            return map;
+        std::unordered_map<std::string, int> connect_fields_to_values()
+        {
+            std::vector<int> rows_to_skip = get_rows_to_skip();
+            std::vector<std::vector<int>> columns = get_columns_with_valid_rows(rows_to_skip);
+            /// key - field name, value - column indexes
+            std::unordered_map<std::string, std::vector<int>> fields_with_all_possible_columns = map_fields_with_all_possible_columns(columns);
+            return arrange_fields(fields_with_all_possible_columns);
         }
 
         Scanner(const std::string& file_name)
