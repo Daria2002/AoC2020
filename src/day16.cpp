@@ -84,6 +84,27 @@ class Scanner
             return count;
         }
 
+        void arrange_fields(std::unordered_map<std::string, std::vector<int>>& map_field_index)
+        {
+            while(count_single(map_field_index) != map_field_index.size())
+            {
+                for(auto& pair : map_field_index)
+                {
+                    if(map_field_index[pair.first].size() == 1)
+                    {
+                        for(auto& pair2 : map_field_index)
+                        {
+                            auto it = std::find(pair2.second.begin(), pair2.second.end(), map_field_index[pair.first][0]);
+                            if(pair2.second.size() > 1 && it != pair2.second.end())
+                            {
+                                pair2.second.erase(it);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         std::unordered_map<std::string, int> connect_fields_to_values()
         {
             std::vector<std::vector<int>> columns;
@@ -141,23 +162,7 @@ class Scanner
                 }
             }
 
-            while(count_single(map_field_index) != map_field_index.size())
-            {
-                for(auto& pair : map_field_index)
-                {
-                    if(map_field_index[pair.first].size() == 1)
-                    {
-                        for(auto& pair2 : map_field_index)
-                        {
-                            auto it = std::find(pair2.second.begin(), pair2.second.end(), map_field_index[pair.first][0]);
-                            if(pair2.second.size() > 1 && it != pair2.second.end())
-                            {
-                                pair2.second.erase(it);
-                            }
-                        }
-                    }
-                }
-            }
+            arrange_fields(map_field_index);
 
             for(auto& pair : map_field_index)
             {
@@ -237,7 +242,6 @@ class Scanner
             {
                 if(field_value_pair.first.find(name) == 0)
                 {
-                    std::cout << "\nval = " << field_value_pair.second << '\n';
                     multiplication *= field_value_pair.second;
                 }
             }
