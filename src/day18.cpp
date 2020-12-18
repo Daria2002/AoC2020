@@ -85,16 +85,8 @@ class Calculator
                 if(expression[i] == '(')
                 {
                     std::string part = extract(expression, i);
-                    if(addition_over_multiplication)
-                    {
-                        second_element = first_element == -1LL ? second_element : calculate(part, true);
-                        first_element = first_element == -1LL ? calculate(part, true) : first_element;
-                    }
-                    else
-                    {
-                        second_element = first_element == -1LL ? second_element : calculate(part);
-                        first_element = first_element == -1LL ? calculate(part) : first_element;
-                    }
+                    second_element = first_element == -1LL ? second_element : calculate(part, addition_over_multiplication);
+                    first_element = first_element == -1LL ? calculate(part, addition_over_multiplication) : first_element;
                     i += part.size();
                 }
                 else if(expression[i] == '*' || expression[i] == '+')
@@ -102,7 +94,7 @@ class Calculator
                     mode = expression[i] == '*' ? Mode::multiply : Mode::sum;
                     if(addition_over_multiplication && mode == Mode::multiply)
                     {
-                        second_element = calculate(expression.substr(i + 1), true);
+                        second_element = calculate(expression.substr(i + 1), addition_over_multiplication);
                         first_element *= second_element;
                         break;
                     }
