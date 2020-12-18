@@ -84,7 +84,8 @@ class Calculator
                 if(expression[i] == '(')
                 {
                     std::string part = extract(expression, i);
-                    second_element = calculate(part);
+                    second_element = first_element == -1 ? second_element : calculate(part);
+                    first_element = first_element == -1 ? calculate(part) : first_element;
                     std::cout << "expression[i] = " << expression[i] << '\n';
                     i += part.size();
                     std::cout << "expression[i] = " << expression[i] << '\n';
