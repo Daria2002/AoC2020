@@ -37,9 +37,9 @@ class Calculator
 
         std::vector<std::string> expressions;
 
-        int calculate()
+        long long calculate()
         {
-            int result = 0;
+            long long result = 0LL;
             for(std::string expression : expressions)
             {
                 expression.erase(std::remove_if(expression.begin(), expression.end(), isspace), expression.end());
@@ -68,15 +68,15 @@ class Calculator
             sum = 1, multiply = 2
         };
 
-        int do_operation(int first, int second, Mode mode) const
+        long long do_operation(long long first, long long second, Mode mode) const
         {
             return ((mode == Mode::sum) ? first + second : first * second);
         }
 
-        int calculate(const std::string expression) const
+        long long calculate(const std::string expression) const
         {
-            int first_element = -1;
-            int second_element = -1;
+            long long first_element = -1LL;
+            long long second_element = -1LL;
             Mode mode = Mode::sum;
             for(int i = 0; i < expression.size(); i++)
             {
@@ -84,11 +84,9 @@ class Calculator
                 if(expression[i] == '(')
                 {
                     std::string part = extract(expression, i);
-                    second_element = first_element == -1 ? second_element : calculate(part);
-                    first_element = first_element == -1 ? calculate(part) : first_element;
-                    std::cout << "expression[i] = " << expression[i] << '\n';
+                    second_element = first_element == -1LL ? second_element : calculate(part);
+                    first_element = first_element == -1LL ? calculate(part) : first_element;
                     i += part.size();
-                    std::cout << "expression[i] = " << expression[i] << '\n';
                 }
                 else if(expression[i] == '*' || expression[i] == '+')
                 {
@@ -96,21 +94,16 @@ class Calculator
                 }
                 else
                 {
-                    int num = expression[i] - '0';
-                    second_element = first_element == -1 ? second_element : num;
-                    first_element = first_element == -1 ? num : first_element;
+                    long long num = (long long)(expression[i] - '0');
+                    second_element = first_element == -1LL ? second_element : num;
+                    first_element = first_element == -1LL ? num : first_element;
                 }
-                if(first_element != -1 && second_element != -1)
+                if(first_element != -1LL && second_element != -1LL)
                 {
-                    std::cout << "first el = " << first_element << '\n';
-                    std::cout << "second el = " << second_element << '\n';
                     first_element = do_operation(first_element, second_element, mode);
-                    second_element = -1;
-                    std::cout << "expression[i] = " << expression[i] << '\n';
+                    second_element = -1LL;
                 }
             }
-            std::cout << "expression = " << expression << '\n';
-            std::cout << "result = " << first_element << '\n';
             return first_element;
         }
 };
