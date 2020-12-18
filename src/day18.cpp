@@ -2,20 +2,8 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
-#include <utility>
 #include <numeric>
-#include <tuple>
-#include <unordered_map>
-#include <map>
 #include <boost/algorithm/string/find.hpp>
-
-using pos_3D_t = std::tuple<int, int, int>;
-struct pos_3D_hash : public std::unary_function<pos_3D_t, std::size_t> {
-  std::size_t operator()(const pos_3D_t &key) const {
-    return std::get<0>(key) ^ std::get<1>(key) ^ std::get<2>(key);
-  }
-};
-using galaxy_3D_map_t = std::unordered_map<pos_3D_t, char, pos_3D_hash>;
 
 class Calculator
 {
@@ -39,13 +27,12 @@ class Calculator
 
         long long calculate(bool addition_over_multiplication = false)
         {
-            long long result = 0LL;
-            for(std::string expression : expressions)
-            {
+            long long result = std::accumulate(std::begin(expressions), std::end(expressions), 
+            0LL, [&](const long long previous, std::string expression)
+            { 
                 expression.erase(std::remove_if(expression.begin(), expression.end(), isspace), expression.end());
-                result += (addition_over_multiplication == true ? 
-                calculate(expression, true) : calculate(expression));
-            }
+                return previous + (addition_over_multiplication == true ? calculate(expression, true) : calculate(expression));
+            });
             return result;
         }
 
