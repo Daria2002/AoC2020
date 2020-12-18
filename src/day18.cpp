@@ -48,6 +48,17 @@ class Calculator
             return result;
         }
 
+        long long calculate_addition_over_multiplication()
+        {
+            long long result = 0LL;
+            for(std::string expression : expressions)
+            {
+                expression.erase(std::remove_if(expression.begin(), expression.end(), isspace), expression.end());
+                result += calculate_addition_over_multiplication(expression);
+            }
+            return result;
+        }
+
     private:
         std::string extract(const std::string expression, int start) const
         {
@@ -92,7 +103,47 @@ class Calculator
                 {
                     mode = expression[i] == '*' ? Mode::multiply : Mode::sum;
                 }
-                else
+                else // number
+                {
+                    long long num = (long long)(expression[i] - '0');
+                    second_element = first_element == -1LL ? second_element : num;
+                    first_element = first_element == -1LL ? num : first_element;
+                }
+                if(first_element != -1LL && second_element != -1LL)
+                {
+                    first_element = do_operation(first_element, second_element, mode);
+                    second_element = -1LL;
+                }
+            }
+            return first_element;
+        }
+
+        long long calculate_addition_over_multiplication(const std::string expression) const
+        {
+            long long first_element = -1LL;
+            long long second_element = -1LL;
+            Mode mode = Mode::sum;
+            for(int i = 0; i < expression.size(); i++)
+            {
+                if(expression[i] == ')') continue;
+                if(expression[i] == '(')
+                {
+                    std::string part = extract(expression, i);
+                    second_element = first_element == -1LL ? second_element : calculate_addition_over_multiplication(part);
+                    first_element = first_element == -1LL ? calculate_addition_over_multiplication(part) : first_element;
+                    i += part.size();
+                }
+                else if(expression[i] == '*' || expression[i] == '+')
+                {
+                    mode = expression[i] == '*' ? Mode::multiply : Mode::sum;
+                    if(mode == Mode::multiply)
+                    {
+                        second_element = calculate_addition_over_multiplication(expression.substr(i + 1));
+                        first_element *= second_element;
+                        break;
+                    }
+                }
+                else // number
                 {
                     long long num = (long long)(expression[i] - '0');
                     second_element = first_element == -1LL ? second_element : num;
@@ -118,6 +169,8 @@ void part1(const std::string& file_name)
 void part2(const std::string& file_name)
 {
     std::cout << "======\nPart 2\n======\n";
+    Calculator calculator(file_name);
+    std::cout << "Sum of the resulting values = " << calculator.calculate_addition_over_multiplication() << '\n';
 }
 
 int main()
