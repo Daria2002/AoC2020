@@ -168,13 +168,16 @@ void part1(const std::string& file_name)
 void part2(const std::string& file_name)
 {
     std::cout << "======\nPart 2\n======\n";
+    // Messenger messenger(file_name); // builds rules and stores messages to check
+    // std::cout << messenger.count_valid_messages(0) << " messages match rule 0." << '\n';
 }
 
 int main()
 {
-    const std::string file_name = "/home/daria/Documents/AoC2020/input/day19.txt";
-    part1(file_name);
+    const std::string file_name1 = "/home/daria/Documents/AoC2020/input/day19_1.txt";
+    part1(file_name1);
     std::cout << '\n';
-    part2(file_name);
+    const std::string file_name2 = "/home/daria/Documents/AoC2020/input/day19_2.txt";
+    part2(file_name2);
     std::cout << '\n';
 }
