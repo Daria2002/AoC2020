@@ -76,24 +76,31 @@ class Messenger
             std::cout << "dependencies = " << dependencies << '\n';
             while (unprocessed_part.size() > 0)
             {
+                std::cout << "part = " << unprocessed_part << '\n';
                 if(unprocessed_part.find(" ") < unprocessed_part.find("|") || (unprocessed_part.find(" ") == unprocessed_part.find("|")))
                 {
+                    std::cout << "first condition\n";
                     int end = (unprocessed_part.find(" ") > (unprocessed_part.size() - 1)) ? unprocessed_part.size() : unprocessed_part.find(" ");
                     // just read the number - dependency rule number
                     int number = std::stoi(unprocessed_part.substr(0, end));
                     if(end != unprocessed_part.size() - 1 && (unprocessed_part.find(" ") != unprocessed_part.find("|")))
                         unprocessed_part = unprocessed_part.substr(end + 1);
-                    else break;
-                    std::cout << "unprocessed part after space = " << unprocessed_part << '\n';
+                    else unprocessed_part = "";
                     std::cout << "append rule number = " << number << '\n';
                     append(building_message, number);
+                    std::cout << "unprocessed part after space = " << unprocessed_part << '\n';
+                }
+                else if(unprocessed_part.find("|") < SIZE_MAX)
+                {
+                    std::cout << "second condition\n";
+                    unprocessed_part = unprocessed_part.substr(unprocessed_part.find("|") + 2);
+                    possible_messages.insert(possible_messages.end(), building_message.begin(), building_message.end());
+                    building_message.clear();
+                    std::cout << "unprocessed part after | = " << unprocessed_part << '\n';
                 }
                 else
                 {
-                    unprocessed_part = unprocessed_part.substr(unprocessed_part.find("|") + 2);
-                    std::cout << "unprocessed part after | = " << unprocessed_part << '\n';
-                    possible_messages.insert(possible_messages.end(), building_message.begin(), building_message.end());
-                    building_message.clear();
+                    std::cout << "no condition\n";
                 }
             }
             possible_messages.insert(possible_messages.end(), building_message.begin(), building_message.end());
@@ -133,11 +140,11 @@ class Messenger
                 }
             }
             build_messages();
-            for(auto pair : map_rules_and_messages)
-            {
-                std::cout << "rule = " << pair.first << '\n';
-                for(auto el : pair.second) std::cout << "combination = " << el << '\n';
-            }
+            // for(auto pair : map_rules_and_messages)
+            // {
+            //     std::cout << "rule = " << pair.first << '\n';
+            //     for(auto el : pair.second) std::cout << "combination = " << el << '\n';
+            // }
         }
 
         void add_rule(std::string line)
