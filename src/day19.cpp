@@ -48,11 +48,21 @@ class Messenger
         {
             std::vector<std::string> messages_to_append = map_rules_and_messages[rule_number];
             std::vector<std::string> new_building_message;
-            for(std::string building_mess : building_message)
+            if(building_message.size() > 0) 
+            {
+                for(std::string building_mess : building_message)
+                {
+                    for(std::string append_mess : messages_to_append)
+                    {
+                        new_building_message.push_back(building_mess + append_mess);
+                    }
+                }
+            }
+            else
             {
                 for(std::string append_mess : messages_to_append)
                 {
-                    new_building_message.push_back(building_mess + append_mess);
+                    new_building_message.push_back(append_mess);
                 }
             }
             building_message = new_building_message;
@@ -63,9 +73,10 @@ class Messenger
             std::vector<std::string> possible_messages;
             std::string unprocessed_part = dependencies;
             std::vector<std::string> building_message;
+            std::cout << "dependencies = " << dependencies << '\n';
             while (unprocessed_part.size() > 0)
             {
-                if(unprocessed_part.find(" ") < unprocessed_part.find(" |"))
+                if(unprocessed_part.find(" ") < unprocessed_part.find("|") || (unprocessed_part.find(" ") == unprocessed_part.find("|")))
                 {
                     int end = (unprocessed_part.find(" ") > (unprocessed_part.size() - 1)) ? unprocessed_part.size() : unprocessed_part.find(" ");
                     // just read the number - dependency rule number
@@ -73,14 +84,19 @@ class Messenger
                     if(end != unprocessed_part.size() - 1 && (unprocessed_part.find(" ") != unprocessed_part.find("|")))
                         unprocessed_part = unprocessed_part.substr(end + 1);
                     else break;
+                    std::cout << "unprocessed part after space = " << unprocessed_part << '\n';
+                    std::cout << "append rule number = " << number << '\n';
                     append(building_message, number);
                 }
                 else
                 {
                     unprocessed_part = unprocessed_part.substr(unprocessed_part.find("|") + 2);
+                    std::cout << "unprocessed part after | = " << unprocessed_part << '\n';
+                    possible_messages.insert(possible_messages.end(), building_message.begin(), building_message.end());
                     building_message.clear();
                 }
             }
+            possible_messages.insert(possible_messages.end(), building_message.begin(), building_message.end());
             return possible_messages;
         }
 
@@ -92,7 +108,8 @@ class Messenger
             {
                 for(std::pair<int, std::string> rule : map_rules_and_dependencies)
                 {
-                    if(map_rules_and_messages.find(rule.first) == map_rules_and_messages.end() && all_dependencies_processed(rule.second))
+                    if(map_rules_and_messages.find(rule.first) == map_rules_and_messages.end() && 
+                    all_dependencies_processed(rule.second))
                     {
                         map_rules_and_messages[rule.first] = all_possible_messages(rule.second);
                     }
@@ -116,11 +133,11 @@ class Messenger
                 }
             }
             build_messages();
-            // for(auto pair : map_rules_and_messages)
-            // {
-            //     std::cout << "rule = " << pair.first << '\n';
-            //     for(auto el : pair.second) std::cout << "combination = " << el << '\n';
-            // }
+            for(auto pair : map_rules_and_messages)
+            {
+                std::cout << "rule = " << pair.first << '\n';
+                for(auto el : pair.second) std::cout << "combination = " << el << '\n';
+            }
         }
 
         void add_rule(std::string line)
