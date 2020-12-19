@@ -313,7 +313,6 @@ class AdvancedMessenger
 
         bool is_match_for_rule_0(std::string message)
         {
-            std::string mess_before = message;
             int combination_size_42 = map_rules_and_messages[42][0].size();
             int combination_size_31 = map_rules_and_messages[31][0].size();
             int count_42 = 0;
@@ -330,30 +329,17 @@ class AdvancedMessenger
                         mode = CheckMode::check_31;
                         continue;
                     }
-                    if(mess_before == "aaaabbaaaabbaaa") std::cout << "match 42\n";
                     count_42++;
                 }
                 else
                 {
                     if(!is_match(31, subset)) return false;
                     count_31++;
-                    if(mess_before == "aaaabbaaaabbaaa") std::cout << "match 31\n";
-                }
-                if(mess_before == "aaaabbaaaabbaaa")
-                {
-                    std::cout << "subset = " << subset << '\n';
-                    std::cout << "message before = " << message << '\n';
                 }
                 message = message.substr(mode == CheckMode::check_42 ? 
                 combination_size_42 : combination_size_31);
-                if(mess_before == "aaaabbaaaabbaaa")
-                {
-                    std::cout << "message after = " << message << '\n';
-                }
             }
-            int result = count_42 > count_31 && count_31 > 0;
-            // if(result) std::cout << "!!!!! mess = " << mess_before << '\n';
-            return result;
+            return count_42 > count_31 && count_31 > 0;
         }
 
         int count_valid_messages_for_rule_0()
@@ -368,8 +354,8 @@ class AdvancedMessenger
 void part1(const std::string& file_name)
 {
     std::cout << "======\nPart 1\n======\n";
-    // Messenger messenger(file_name); // builds rules and stores messages to check
-    // std::cout << messenger.count_valid_messages(0) << " messages match rule 0." << '\n';
+    Messenger messenger(file_name); // builds rules and stores messages to check
+    std::cout << messenger.count_valid_messages(0) << " messages match rule 0." << '\n';
 }
 
 void part2(const std::string& file_name)
