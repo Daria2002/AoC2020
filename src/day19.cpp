@@ -222,10 +222,9 @@ void part2(const std::string& file_name)
 
 int main()
 {
-    const std::string file_name1 = "/home/daria/Documents/AoC2020/input/day19_1.txt";
-    part1(file_name1);
+    const std::string file_name = "/home/daria/Documents/AoC2020/input/day19.txt";
+    part1(file_name);
     std::cout << '\n';
-    const std::string file_name2 = "/home/daria/Documents/AoC2020/input/day19_2.txt";
-    part2(file_name2);
+    part2(file_name);
     std::cout << '\n';
 }
