@@ -24,10 +24,6 @@ class Tile
             {
                 for(int j = 0; j < other_tile.borders.size(); j++)
                 {
-                    if(id == 3079)
-                    {
-                        std::cout << "comparing " << borders[i] << " and " << other_tile.borders[j] << '\n';
-                    }
                     if(borders[i] == other_tile.borders[j] && 
                     std::find(adjecent.begin(), adjecent.end(), other_tile.id) == adjecent.end())
                     {
@@ -36,16 +32,13 @@ class Tile
                         match_indices = std::make_pair(id, other_tile.id);
                         count++;
                         other_tile.count++;
-                        std::cout << "tile id = " << id << ", count = " << count << '\n';
-                        std::cout << "tile id = " << other_tile.id << ", count = " << other_tile.count << '\n';
-                        std::cout << "========================\n";
                         return match_indices;
                     }
                 }
             }
             return match_indices;
         }
-        
+
         void add_reversed_borders()
         {
             std::vector<std::string> reversed;
@@ -123,7 +116,6 @@ class Decoder
                 for(Tile& other_tile : tiles)
                 {
                     if(other_tile.id == tile.id) continue;
-                    std::cout << "is match = " << tile.id << " and " << other_tile.id << '\n';
                     std::pair<int, int> match_ids = tile.match(other_tile);
                 }
             }
@@ -132,15 +124,9 @@ class Decoder
         std::vector<int> get_corner_ids()
         {
             std::vector<int> corner_ids;
-            std::cout << "\n============== Corners ===============\n";
             for(Tile tile : tiles)
             {
-                std::cout << "tile id = " << tile.id << ", count = " << tile.count << '\n';
-                if(tile.count == 2) 
-                {
-                    std::cout << "tile.id = " << tile.id << '\n';
-                    corner_ids.push_back(tile.id);
-                }
+                if(tile.count == 2) corner_ids.push_back(tile.id);
             }
             return corner_ids;
         }
