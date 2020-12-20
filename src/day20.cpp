@@ -5,6 +5,8 @@
 #include <numeric>
 #include <unordered_map>
 #include <boost/algorithm/string/find.hpp>
+#include <cmath>
+#include <boost/range/algorithm/count.hpp>
 
 class Tile
 {
@@ -66,12 +68,16 @@ class Decoder
             }   
         }
 
-        Decoder(std::string file_name)
+        // key - id, value - lines
+        std::unordered_map<int, std::vector<std::string>> tiles_map;
+
+        Decoder(std::string file_name, bool monster = false)
         {
             std::ifstream file(file_name);
             std::string line;
             Tile tile;
             int row = 0;
+            std::vector<std::string> tile_map;
             if(file.is_open())
             {
                 while(std::getline(file, line))
@@ -83,10 +89,13 @@ class Decoder
                     else if(line.empty())
                     {
                         tiles.push_back(tile);
+                        tiles_map[tile.id] = tile_map;
+                        tile_map.clear();
                         row = 0;
                     }
                     else
                     {
+                        tile_map.push_back(line);
                         if(row == 0) tile.borders[0] = line;
                         if(row == 9) tile.borders[1] = line;
                         tile.borders[2] += line[0];
@@ -97,19 +106,11 @@ class Decoder
                 tiles.push_back(tile); // add last tile
             }
             add_reversing_combinations();
-            build_image();
-            // for(Tile tile : tiles)
-            // {
-            //     std::cout << "========== tile ============\n";
-            //     std::cout << "tile.id = " << tile.id << '\n';
-            //     std::cout << "tile.up = " << tile.borders[0] << '\n';
-            //     std::cout << "tile.down = " << tile.borders[1] << '\n';
-            //     std::cout << "tile.left = " << tile.borders[2] << '\n';
-            //     std::cout << "tile.right = " << tile.borders[3] << '\n';
-            // }
+            connect_tiles();
+            if(monster) build_image();
         }
 
-        void build_image()
+        void connect_tiles()
         {
             for(Tile& tile : tiles)
             {
@@ -119,6 +120,49 @@ class Decoder
                     std::pair<int, int> match_ids = tile.match(other_tile);
                 }
             }
+        }
+
+        void remove_borders()
+        {
+            // key - id, value - lines
+            std::unordered_map<int, std::vector<std::string>> new_tiles_map;
+            for(auto pair : tiles_map)
+            {
+                int tile_id = pair.first;
+                std::vector<std::string> tile_lines = pair.second;
+                std::vector<std::string> lines_removed_border;
+                for(int i = 1; i < tile_lines.size() - 1; i++)
+                {
+                    lines_removed_border.push_back(tile_lines[i].substr(1, tile_lines[i].size() - 2));
+                }
+                new_tiles_map[tile_id] = lines_removed_border;
+            }
+            tiles_map = new_tiles_map;
+        }
+
+        std::vector<std::string> image;
+
+        std::unordered_map<int, std::vector<int>> get_adjecency_map()
+        {
+            std::unordered_map<int, std::vector<int>> adjecency_map;
+            for(Tile tile : tiles)
+            {
+                std::vector<int> adjecent;
+                std::cout << "tile id = " << tile.id << '\n';
+                for(int adj : tile.adjecent)
+                {
+                    std::cout << "adj = " << adj << '\n';
+                    adjecent.push_back(adj);
+                }
+                adjecency_map[tile.id] = adjecent;
+                std::cout << '\n';
+            }
+            return adjecency_map;
+        }
+
+        void build_image()
+        {
+
         }
 
         std::vector<int> get_corner_ids()
@@ -138,6 +182,22 @@ class Decoder
             1LL, [&](const long long previous, int id) { return previous * id; });
             return result;
         }
+
+        int count_sea_mosters()
+        {
+            // todo
+            return 0;
+        }
+
+        int count_hashtag()
+        {
+            int count = 0;
+            for(std::string image_row : image)
+            {
+                count += boost::count(image_row, '#');
+            }
+            return count;
+        }
 };
 
 void part1(const std::string& file_name)
@@ -150,6 +210,10 @@ void part1(const std::string& file_name)
 void part2(const std::string& file_name)
 {
     std::cout << "======\nPart 2\n======\n";
+    Decoder decoder(file_name, true);
+    int sea_mosters = decoder.count_sea_mosters();
+    constexpr int count_monster_hashtag = 15;
+    std::cout << decoder.count_hashtag() - count_monster_hashtag * sea_mosters << " # are not part of a sea monster\n";
 }
 
 int main()
