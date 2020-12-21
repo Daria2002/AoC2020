@@ -35,6 +35,52 @@ class Reader
             return elements;
         }
 
+        // key - allergen, value - all ingredients named in same line as allergen
+        std::unordered_map<std::string, std::vector<std::string>> map_allergens_and_ingredients;
+        std::vector<std::string> all_ingredients;
+        std::vector<std::string> all_ingredients_with_allergens;
+
+        bool some_allergens_contains_more_options()
+        {
+            for(auto pair : map_allergens_and_ingredients)
+            {
+                if(pair.second.size() > 1) return true;
+            }
+            return false;
+        }
+
+        void take_only_best_ingredients()
+        {
+            // todo: in map take only those elements that occurred the most number
+            // of times 
+        }
+
+        void process_allergens_and_ingredients()
+        {
+            take_only_best_ingredients();
+            std::unordered_map<std::string, std::vector<std::string>> 
+            new_map_allergens_and_ingredients = map_allergens_and_ingredients;
+            while(some_allergens_contains_more_options())
+            {
+                for(auto& pair : new_map_allergens_and_ingredients)
+                {
+                    if(pair.second.size() != 1) continue;
+                    for(auto& pair2 : new_map_allergens_and_ingredients)
+                    {
+                        if(std::find(pair2.second.begin(), pair2.second.end(), pair.second[0])
+                        == pair2.second.end()) continue;
+                        std::vector<std::string> new_ingredients;
+                        for(std::string ingredient : new_ingredients)
+                        {
+                            if(ingredient != pair.second[0]) new_ingredients.push_back(ingredient);
+                        }
+                        new_map_allergens_and_ingredients[pair2.first] = new_ingredients;
+                    }
+                }
+                map_allergens_and_ingredients = new_map_allergens_and_ingredients;
+            }
+        }
+
         Reader(std::string file_name)
         {
             std::ifstream file(file_name);
@@ -44,15 +90,32 @@ class Reader
                 while(std::getline(file, line))
                 {
                     std::vector<std::string> ingredients = get_ingredients(line.substr(0, line.find("(") - 1));
-                    std::vector<std::string> allergens = get_allergens(line.substr(line.find("contains") + 9, line.size() - line.find("contains") - 8 - 2));
+                    all_ingredients.insert(all_ingredients.begin(), ingredients.begin(), ingredients.end());
+                    std::vector<std::string> allergens = get_allergens(line.substr(line.find("contains") + 9, 
+                    line.size() - line.find("contains") - 8 - 2));
+                    for(std::string allergen : allergens)
+                    {
+                        map_allergens_and_ingredients[allergen].insert(map_allergens_and_ingredients[allergen].begin(), 
+                        ingredients.begin(), ingredients.end());
+                    }
                 }
             }
+            process_allergens_and_ingredients();
         }
 
         int ingredients_without_allergens_appearance()
         {
-            // todo
-            return 0;
+            int count = 0;
+            for(auto ingredient : all_ingredients)
+            {
+                if(std::find(all_ingredients_with_allergens.begin(), 
+                all_ingredients_with_allergens.end(), ingredient) != 
+                all_ingredients_with_allergens.end())
+                {
+                    count++;
+                }
+            }
+            return count;
         }
 };
 
