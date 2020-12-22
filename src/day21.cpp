@@ -4,6 +4,7 @@
 #include <vector>
 #include <numeric>
 #include <unordered_map>
+#include <limits>
 #include <boost/algorithm/string/find.hpp>
 #include <cmath>
 #include <boost/range/algorithm/count.hpp>
@@ -49,10 +50,55 @@ class Reader
             return false;
         }
 
+        std::vector<std::string> find_max_value(std::unordered_map<std::string, int> count)
+        {
+            int max = std::numeric_limits<int>::min();
+            std::vector<std::string> v;
+            for(auto pair : count)
+            {
+                if(pair.second > max) 
+                {
+                    max = pair.second;
+                    v.clear();
+                    v.push_back(pair.first);
+                }
+                else if(pair.second == max)
+                {
+                    v.push_back(pair.first);
+                }
+            }
+            return v;
+        }
+
         void take_only_best_ingredients()
         {
-            // todo: in map take only those elements that occurred the most number
-            // of times 
+            for(auto pair : map_allergens_and_ingredients)
+            {
+                // key-ingredient, value-count ingredient
+                std::unordered_map<std::string, int> count;
+                for(int i = 0; i < pair.second.size(); i++)
+                {
+                    if(count.find(pair.second[i]) == count.end())
+                    {
+                        count[pair.second[i]] = 1;
+                    }
+                    else
+                    {
+                        count[pair.second[i]]++;
+                    }
+                }
+                std::vector<std::string> max_str = find_max_value(count);
+                std::vector<std::string> ingredients;
+                for(int i = 0; i < pair.second.size(); i++)
+                {
+                    if(std::find(max_str.begin(), max_str.end(), pair.second[i]) != max_str.end() &&
+                    std::find(ingredients.begin(), ingredients.end(), pair.second[i]) == ingredients.end())
+                    {
+                        ingredients.push_back(pair.second[i]);
+                    }
+                }
+                map_allergens_and_ingredients[pair.first] = ingredients;
+            }
         }
 
         void process_allergens_and_ingredients()
